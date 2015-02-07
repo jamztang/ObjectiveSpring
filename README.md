@@ -17,11 +17,9 @@ Code sample
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // Do any additional setup after loading the view, typically from a
-nib.
+    // Do any additional setup after loading the view, typically from a nib.
 
-    SpringView *springView = [[SpringView alloc]
-initWithFrame:CGRectMake(100, 100, 100, 100)];
+    SpringView *springView = [[SpringView alloc] initWithFrame:CGRectMake(100, 100, 100, 100)];
     springView.backgroundColor = [UIColor yellowColor];
     springView.animation = @"pop";
     springView.delay = 1;
