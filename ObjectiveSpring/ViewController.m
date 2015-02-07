@@ -7,6 +7,7 @@
 //
 
 #import "ViewController.h"
+#import "ObjectiveSpring-Swift.h"
 
 @interface ViewController ()
 
@@ -17,11 +18,12 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
-}
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
+    SpringView *springView = [[SpringView alloc] initWithFrame:CGRectMake(100, 100, 100, 100)];
+    springView.backgroundColor = [UIColor yellowColor];
+    springView.animation = @"pop";
+    springView.autostart = true;
+    [self.view addSubview:springView];
 }
 
 @end
