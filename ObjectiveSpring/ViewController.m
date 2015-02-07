@@ -22,6 +22,8 @@
     SpringView *springView = [[SpringView alloc] initWithFrame:CGRectMake(100, 100, 100, 100)];
     springView.backgroundColor = [UIColor yellowColor];
     springView.animation = @"pop";
+    springView.delay = 1;
+    springView.duration = 3;
     springView.autostart = true;
     [self.view addSubview:springView];
 }
