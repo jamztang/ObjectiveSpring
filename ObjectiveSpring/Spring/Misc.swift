@@ -23,7 +23,11 @@
 import UIKit
 
 public extension String {
-    public var length: Int { return countElements(self) }
+    public var length: Int { return count(self) }
+
+    public func toURL() -> NSURL? {
+        return NSURL(string: self)
+    }
 }
 
 public func htmlToAttributedString(text: String) -> NSAttributedString! {
@@ -58,40 +62,40 @@ public extension UIColor {
         var green: CGFloat = 0.0
         var blue:  CGFloat = 0.0
         var alpha: CGFloat = 1.0
+        var hex:   String = hex
         
         if hex.hasPrefix("#") {
             let index   = advance(hex.startIndex, 1)
-            let hex     = hex.substringFromIndex(index)
-            let scanner = NSScanner(string: hex)
-            var hexValue: CUnsignedLongLong = 0
-            if scanner.scanHexLongLong(&hexValue) {
-                switch (countElements(hex)) {
-                case 3:
-                    red   = CGFloat((hexValue & 0xF00) >> 8)       / 15.0
-                    green = CGFloat((hexValue & 0x0F0) >> 4)       / 15.0
-                    blue  = CGFloat(hexValue & 0x00F)              / 15.0
-                case 4:
-                    red   = CGFloat((hexValue & 0xF000) >> 12)     / 15.0
-                    green = CGFloat((hexValue & 0x0F00) >> 8)      / 15.0
-                    blue  = CGFloat((hexValue & 0x00F0) >> 4)      / 15.0
-                    alpha = CGFloat(hexValue & 0x000F)             / 15.0
-                case 6:
-                    red   = CGFloat((hexValue & 0xFF0000) >> 16)   / 255.0
-                    green = CGFloat((hexValue & 0x00FF00) >> 8)    / 255.0
-                    blue  = CGFloat(hexValue & 0x0000FF)           / 255.0
-                case 8:
-                    red   = CGFloat((hexValue & 0xFF000000) >> 24) / 255.0
-                    green = CGFloat((hexValue & 0x00FF0000) >> 16) / 255.0
-                    blue  = CGFloat((hexValue & 0x0000FF00) >> 8)  / 255.0
-                    alpha = CGFloat(hexValue & 0x000000FF)         / 255.0
-                default:
-                    print("Invalid RGB string, number of characters after '#' should be either 3, 4, 6 or 8")
-                }
-            } else {
-                println("Scan hex error")
+            hex         = hex.substringFromIndex(index)
+        }
+
+        let scanner = NSScanner(string: hex)
+        var hexValue: CUnsignedLongLong = 0
+        if scanner.scanHexLongLong(&hexValue) {
+            switch (count(hex)) {
+            case 3:
+                red   = CGFloat((hexValue & 0xF00) >> 8)       / 15.0
+                green = CGFloat((hexValue & 0x0F0) >> 4)       / 15.0
+                blue  = CGFloat(hexValue & 0x00F)              / 15.0
+            case 4:
+                red   = CGFloat((hexValue & 0xF000) >> 12)     / 15.0
+                green = CGFloat((hexValue & 0x0F00) >> 8)      / 15.0
+                blue  = CGFloat((hexValue & 0x00F0) >> 4)      / 15.0
+                alpha = CGFloat(hexValue & 0x000F)             / 15.0
+            case 6:
+                red   = CGFloat((hexValue & 0xFF0000) >> 16)   / 255.0
+                green = CGFloat((hexValue & 0x00FF00) >> 8)    / 255.0
+                blue  = CGFloat(hexValue & 0x0000FF)           / 255.0
+            case 8:
+                red   = CGFloat((hexValue & 0xFF000000) >> 24) / 255.0
+                green = CGFloat((hexValue & 0x00FF0000) >> 16) / 255.0
+                blue  = CGFloat((hexValue & 0x0000FF00) >> 8)  / 255.0
+                alpha = CGFloat(hexValue & 0x000000FF)         / 255.0
+            default:
+                print("Invalid RGB string, number of characters after '#' should be either 3, 4, 6 or 8")
             }
         } else {
-            print("Invalid RGB string, missing '#' as prefix")
+            println("Scan hex error")
         }
         self.init(red:red, green:green, blue:blue, alpha:alpha)
     }
@@ -112,15 +116,19 @@ public func UIColorFromRGB(rgbValue: UInt) -> UIColor {
 }
 
 public func stringFromDate(date: NSDate, format: String) -> String {
-    var dateFormatter = NSDateFormatter()
+    let dateFormatter = NSDateFormatter()
     dateFormatter.dateFormat = format
     return dateFormatter.stringFromDate(date)
 }
 
 public func dateFromString(date: String, format: String) -> NSDate {
-    var dateFormatter = NSDateFormatter()
+    let dateFormatter = NSDateFormatter()
     dateFormatter.dateFormat = format
-    return dateFormatter.dateFromString(date)!
+    if let date = dateFormatter.dateFromString(date) {
+        return date
+    } else {
+        return NSDate(timeIntervalSince1970: 0)
+    }
 }
 
 public func randomStringWithLength (len : Int) -> NSString {
@@ -143,7 +151,7 @@ public func timeAgoSinceDate(date:NSDate, numericDates:Bool) -> String {
     let unitFlags = NSCalendarUnit.CalendarUnitMinute | NSCalendarUnit.CalendarUnitHour | NSCalendarUnit.CalendarUnitDay | NSCalendarUnit.CalendarUnitWeekOfYear | NSCalendarUnit.CalendarUnitMonth | NSCalendarUnit.CalendarUnitYear | NSCalendarUnit.CalendarUnitSecond
     let now = NSDate()
     let earliest = now.earlierDate(date)
-    let latest = (earliest == now) ? date : now
+    let latest = now.laterDate(date)
     let components:NSDateComponents = calendar.components(unitFlags, fromDate: earliest, toDate: latest, options: nil)
     
     if (components.year >= 2) {
@@ -155,12 +163,12 @@ public func timeAgoSinceDate(date:NSDate, numericDates:Bool) -> String {
             return "1y"
         }
     } else if (components.month >= 2) {
-        return "\(components.month)"
+        return "\(components.month * 4)w"
     } else if (components.month >= 1){
         if (numericDates){
-            return "1M"
+            return "4w"
         } else {
-            return "1M"
+            return "4w"
         }
     } else if (components.weekOfYear >= 2) {
         return "\(components.weekOfYear)w"
