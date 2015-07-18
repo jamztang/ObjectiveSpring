@@ -11,6 +11,8 @@ Code sample
 
 @interface ViewController ()
 
+@property (nonatomic, strong) SpringView *springView;
+
 @end
 
 @implementation ViewController
@@ -25,7 +27,13 @@ Code sample
     springView.delay = 1;
     springView.duration = 3;
     springView.autostart = true;
+    self.springView = springView;
     [self.view addSubview:springView];
+}
+
+// Manually trigger an animation
+- (IBAction)animateButtonDidPress:(id)sender {
+    [self.springView animate];
 }
 
 @end
